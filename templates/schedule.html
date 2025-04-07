@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>時間割登録</h2>
+
+<form method="post" class="mb-4">
+    <div class="mb-2">
+        <label class="form-label">授業名</label>
+        <input type="text" name="class_name" class="form-control" required>
+    </div>
+    <div class="mb-2">
+        <label class="form-label">曜日</label>
+        <select name="day" class="form-select">
+            <option>月</option><option>火</option><option>水</option>
+            <option>木</option><option>金</option>
+        </select>
+    </div>
+    <div class="mb-2">
+        <label class="form-label">時限</label>
+        <select name="period" class="form-select">
+            <option value="1">1限</option><option value="2">2限</option>
+            <option value="3">3限</option><option value="4">4限</option>
+            <option value="5">5限</option>
+        </select>
+    </div>
+    <div class="mb-2">
+        <label class="form-label">教室</label>
+        <input type="text" name="room" class="form-control">
+    </div>
+    <div class="mb-2">
+        <label class="form-label">教員名</label>
+        <input type="text" name="teacher" class="form-control">
+    </div>
+    <input type="submit" value="登録" class="btn btn-primary">
+</form>
+
+<hr>
+
+<h2>時間割表（カレンダー形式）</h2>
+<div class="table-responsive">
+<table class="table table-bordered text-center align-middle" style="table-layout: fixed; width: 100%;">
+    <thead class="table-light">
+        <tr>
+            <th style="width: 10%;">時限＼曜日</th>
+            <th>月</th><th>火</th><th>水</th><th>木</th><th>金</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for period in range(1, 6) %}
+    <tr>
+        <th>{{ period }}限</th>
+        {% for day in ['月', '火', '水', '木', '金'] %}
+        <td style="word-wrap: break-word;">
+            {% set found = false %}
+            {% for item in schedule %}
+                {% if not found and item.day == day and item.period == period %}
+                    <strong>{{ item.class_name }}</strong><br>
+                    {{ item.room }}<br>
+                    {{ item.teacher }}<br>
+
+                    {% for grade in grades %}
+                        {% if grade.class_name == item.class_name %}
+                            <em>成績：{{ grade.total_score if grade.total_score is not none else "未計算" }}</em><br>
+                        {% endif %}
+                    {% endfor %}
+
+                    <a href="{{ url_for('delete_schedule', index=loop.index0) }}" class="btn btn-sm btn-outline-danger mt-1">削除</a>
+                    {% set found = true %}
+                {% endif %}
+            {% endfor %}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

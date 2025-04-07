@@ -1,0 +1,86 @@
+[
+  {
+    "class_name": "電磁気学1",
+    "day": "月",
+    "period": 2,
+    "room": "C111",
+    "teacher": "佐々木　愛一郎"
+  },
+  {
+    "class_name": "心理学",
+    "day": "火",
+    "period": 2,
+    "room": "C408",
+    "teacher": "戸塚　唯"
+  },
+  {
+    "class_name": "電磁波工学",
+    "day": "火",
+    "period": 3,
+    "room": "C309",
+    "teacher": "佐々木　愛一郎"
+  },
+  {
+    "class_name": "アルゴリズム設計",
+    "day": "火",
+    "period": 4,
+    "room": "C309",
+    "teacher": "山内　雅弘"
+  },
+  {
+    "class_name": "Communication Skill for Global Engineers Ⅰ",
+    "day": "水",
+    "period": 2,
+    "room": "C206AB",
+    "teacher": "Nassr Qolamreza"
+  },
+  {
+    "class_name": "組み込みシステム",
+    "day": "水",
+    "period": 3,
+    "room": "C212",
+    "teacher": "吉田　大海"
+  },
+  {
+    "class_name": "人工知能",
+    "day": "木",
+    "period": 1,
+    "room": "C109",
+    "teacher": "佐々木　愛一郎"
+  },
+  {
+    "class_name": "電子計測",
+    "day": "木",
+    "period": 2,
+    "room": "H103",
+    "teacher": "廿日出　好"
+  },
+  {
+    "class_name": "光エレクトロニクス",
+    "day": "木",
+    "period": 3,
+    "room": "C311",
+    "teacher": "部谷　学"
+  },
+  {
+    "class_name": "電子情報工学実験3",
+    "day": "金",
+    "period": 3,
+    "room": "D339",
+    "teacher": "中田　俊司"
+  },
+  {
+    "class_name": "電子情報工学実験3",
+    "day": "金",
+    "period": 4,
+    "room": "D339",
+    "teacher": "中田　俊司"
+  },
+  {
+    "class_name": "情報通信ネットワーク",
+    "day": "月",
+    "period": 1,
+    "room": "C309",
+    "teacher": "石川　雅浩"
+  }
+]

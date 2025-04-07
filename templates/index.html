@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="margin-top: 20px;"></div>
+
+<h3>📅 今日（{{ today_schedule[0].day if today_schedule else '---' }}）の授業</h3>
+<ul>
+    {% for item in today_schedule %}
+        <li>{{ item.period }}限：{{ item.class_name }}（{{ item.room }}） - {{ item.teacher }}</li>
+    {% else %}
+        <li>授業はありません！</li>
+    {% endfor %}
+</ul>
+
+<h3>📝 今日の授業に関係するやること</h3>
+<ul>
+    {% for group in today_todos %}
+        <li><strong>{{ group.class_name }}</strong>
+            <ul>
+                {% for task in group.tasks %}
+                    <li>
+                        {% if task.done %}
+                            ✅ <s>{{ task.task }}</s>
+                        {% else %}
+                            {{ task.task }}
+                        {% endif %}
+                        [<a href="{{ url_for('mark_done', index=loop.index0) }}">
+                            {% if task.done %}戻す{% else %}完了{% endif %}
+                        </a>]
+                        [<a href="{{ url_for('delete_todo', index=loop.index0) }}">削除</a>]
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% else %}
+        <li>やることはありません！</li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<h3>📋 やることリスト（全体）</h3>
+<form method="post">
+    授業名（紐づけたい場合）：<input type="text" name="class_name">
+    やること：<input type="text" name="task" placeholder="例: レポート提出" required>
+    期限：<input type="date" name="due_date">
+    <input type="submit" value="追加">
+</form>
+
+<ul>
+    {% for todo in todos %}
+    <li>
+        {% if todo.done %}
+            ✅ <s>{{ todo.task }}</s>
+        {% else %}
+            {{ todo.task }}
+        {% endif %}
+        {% if todo.class_name %}
+            <span style="color: gray;">（{{ todo.class_name }}）</span>
+        {% endif %}
+
+        {% if todo.due_date %}
+            - <small>
+                {% if todo.days_left > 0 %}
+                    あと{{ todo.days_left }}日
+                {% elif todo.days_left == 0 %}
+                    ⏰ 今日が締切！
+                {% else %}
+                    ⚠️ 期限切れ（{{ todo.days_left | abs }}日前）
+                {% endif %}
+              </small>
+        {% endif %}
+
+        [<a href="{{ url_for('mark_done', index=loop.index0) }}">
+            {% if todo.done %}戻す{% else %}完了{% endif %}
+        </a>]
+        [<a href="{{ url_for('delete_todo', index=loop.index0) }}">削除</a>]
+    </li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<a href="{{ url_for('schedule_page') }}">📅 時間割を登録しに行く</a><br>
+<a href="{{ url_for('grades_page') }}">📊 成績を確認しに行く</a>
+{% endblock %}

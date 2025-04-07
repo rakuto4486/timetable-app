@@ -1,0 +1,107 @@
+/* ベースデザイン */
+body {
+    padding: 1rem;
+    max-width: 800px;
+    margin: auto;
+    background-color: #f9f9f9;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #333;
+  }
+  
+  /* 見出し・ナビゲーション */
+  h1, h2, h3 {
+    margin-top: 1.5rem;
+    font-weight: bold;
+  }
+  nav {
+    margin-bottom: 1rem;
+  }
+  nav a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #007bff;
+  }
+  nav a:hover {
+    text-decoration: underline;
+  }
+  
+  /* フォーム入力 */
+  form input, form select {
+    margin: 5px 0;
+    padding: 6px 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* ボタン */
+  input[type="submit"], .btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  input[type="submit"]:hover, .btn:hover {
+    background-color: #0056b3;
+  }
+  .btn-outline-danger {
+    background: none;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+  }
+  .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  /* テーブルをしっかり表示する */
+  table, th, td {
+    border: 1px solid #ccc !important;
+    padding: 6px;
+  }
+  table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: center;
+  }
+  td {
+    vertical-align: top;
+    word-wrap: break-word;
+  }
+  
+  /* チェック済みタスクの装飾 */
+  s {
+    color: gray;
+  }
+  
+  /* 小さなアイコン風の装飾 */
+  ul li::before {
+    content: "🔹";
+    margin-right: 6px;
+  }
+  
+  /* スマホレスポンシブ用（念のため） */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+    nav a {
+      display: block;
+      margin: 0.25rem 0;
+    }
+    .btn, input[type="submit"] {
+      width: 100%;
+    }
+  }
+  
+  

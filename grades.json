@@ -1,0 +1,203 @@
+[
+  {
+    "class_name": "情報通信ネットワーク",
+    "items": [
+      {
+        "name": "小テスト1",
+        "weight": 20,
+        "score": null
+      },
+      {
+        "name": "小テスト2",
+        "weight": 20,
+        "score": null
+      },
+      {
+        "name": "小テスト3",
+        "weight": 20,
+        "score": null
+      },
+      {
+        "name": "定期試験",
+        "weight": 40,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "電磁気学1",
+    "items": [
+      {
+        "name": "中間演習",
+        "weight": 50,
+        "score": null
+      },
+      {
+        "name": "定期試験",
+        "weight": 50,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "心理学",
+    "items": [
+      {
+        "name": "ミニッツペーパー",
+        "weight": 30,
+        "score": null
+      },
+      {
+        "name": "定期テスト",
+        "weight": 70,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "電磁波工学",
+    "items": [
+      {
+        "name": "定期試験",
+        "weight": 100,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "アルゴリズム設計",
+    "items": [
+      {
+        "name": "レポート課題",
+        "weight": 30,
+        "score": null
+      },
+      {
+        "name": "中間演習",
+        "weight": 30,
+        "score": null
+      },
+      {
+        "name": "定期試験",
+        "weight": 40,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "Communication Skill for Global Engineers Ⅰ",
+    "items": [
+      {
+        "name": "定期試験",
+        "weight": 50,
+        "score": null
+      },
+      {
+        "name": "授業中の活動・発表",
+        "weight": 25,
+        "score": null
+      },
+      {
+        "name": "課題",
+        "weight": 25,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "組み込みシステム",
+    "items": [
+      {
+        "name": "中間演習",
+        "weight": 50,
+        "score": null
+      },
+      {
+        "name": "期末演習",
+        "weight": 50,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "人工知能",
+    "items": [
+      {
+        "name": "中間演習",
+        "weight": 60,
+        "score": null
+      },
+      {
+        "name": "定期試験",
+        "weight": 40,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "電子計測",
+    "items": [
+      {
+        "name": "中間演習",
+        "weight": 50,
+        "score": null
+      },
+      {
+        "name": "定期試験",
+        "weight": 50,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "光エレクトロニクス",
+    "items": [
+      {
+        "name": "講義課題",
+        "weight": 40,
+        "score": null
+      },
+      {
+        "name": "中間演習",
+        "weight": 30,
+        "score": null
+      },
+      {
+        "name": "総合演習",
+        "weight": 30,
+        "score": null
+      }
+    ],
+    "total_score": null
+  },
+  {
+    "class_name": "電子情報工学実験3",
+    "items": [
+      {
+        "name": "レポート",
+        "weight": 40,
+        "score": null
+      },
+      {
+        "name": "実験の到達度",
+        "weight": 40,
+        "score": null
+      },
+      {
+        "name": "成果プレゼンテーション",
+        "weight": 20,
+        "score": null
+      }
+    ],
+    "total_score": null
+  }
+]

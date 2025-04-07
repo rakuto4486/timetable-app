@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>時間割アプリ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>大学時間割 & 成績管理アプリ</h1>
+    <nav>
+        <a href="{{ url_for('index') }}">ホーム</a> |
+        <a href="{{ url_for('schedule_page') }}">時間割</a> |
+        <a href="{{ url_for('grades_page') }}">成績管理</a>
+    </nav>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>

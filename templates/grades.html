@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>成績登録</h2>
+
+<form method="post">
+    授業名：<input type="text" name="class_name" required><br>
+
+    <div id="items">
+        <div class="item">
+            項目名：<input type="text" name="item_name[]" required>
+            割合（%）：<input type="number" name="weight[]" required>
+        </div>
+    </div>
+
+    <button type="button" onclick="addItem()">＋項目を追加</button><br><br>
+    <input type="submit" value="登録">
+</form>
+
+<script>
+function addItem() {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+        項目名：<input type="text" name="item_name[]" required>
+        割合（%）：<input type="number" name="weight[]" required>
+    `;
+    document.getElementById('items').appendChild(div);
+}
+</script>
+
+<hr>
+
+<h2>登録済みの成績</h2>
+<table border="1" cellpadding="10">
+    <tr>
+        <th>授業名</th>
+        <th>項目と割合</th>
+        <th>得点</th>
+        <th>合計点</th>
+        <th>編集</th> <!-- ← 追加！ -->
+    </tr>
+    {% for grade in grades %}
+    <tr>
+        <td>{{ grade.class_name }}</td>
+        <td>
+            <ul>
+            {% for item in grade["items"] %}
+                <li>{{ item.name }}：{{ item.weight }}%</li>
+            {% endfor %}
+            </ul>
+        </td>
+        <td>
+            <ul>
+                {% for item in grade["items"] %}
+                <li>
+                    {% if item.score is not none %}
+                        {{ item.score }}点
+                    {% else %}
+                        <em>未入力</em>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </td>
+        <td>
+            {% if grade.total_score is not none %}
+                {{ grade.total_score }}
+            {% else %}
+                <em>未計算</em>
+            {% endif %}
+        </td>
+        <td>
+            <a href="{{ url_for('edit_grade', index=loop.index0) }}">編集</a> <!-- ← 追加！ -->
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
