@@ -3,35 +3,29 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import json
 import os
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key = 'rakuto'
+
+# PostgreSQL 接続情報（Render の Internal Database URL に置き換えてね）
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://student_db_qrdn_user:zm8VRl4SH6jARDLcWajoJccS8ODy6ZqL@dpg-cvq4p23e5dus73f1k0fg-a/student_db_qrdn'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-class User(UserMixin):
-    def __init__(self, id):
-        self.id = id
-
-USERS_FILE = 'users.json'
-
-def load_users():
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
-
-def save_users(users):
-    with open(USERS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(users, f, ensure_ascii=False, indent=2)
-
-users = load_users()
-
 @login_manager.user_loader
 def load_user(user_id):
-    return User(user_id)
+    return User.query.get(int(user_id))
 
 def load_user_data(base_name):
     filename = f"{current_user.id}_{base_name}"
@@ -50,12 +44,21 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        users = load_users()
-        if username in users:
-            return render_template('register.html', error='すでに登録されています')
-        users[username] = {'password': password}
-        save_users(users)
-        return redirect(url_for('login'))
+
+        # データベース上にすでに存在するか確認
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            return render_template('register.html', error='そのユーザー名は既に使われています。')
+
+        # 新しいユーザー作成
+        new_user = User(username=username, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        # 登録後すぐにログイン状態にする
+        login_user(new_user)
+        return redirect(url_for('index'))
+
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -63,11 +66,16 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        users = load_users()
-        if username in users and users[username]['password'] == password:
-            login_user(User(username))
+
+        # DBからユーザー検索
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.password == password:
+            login_user(user)
             return redirect(url_for('index'))
+
         return render_template('login.html', error='ログイン失敗')
+
     return render_template('login.html')
 
 @app.route('/logout')
@@ -204,3 +212,7 @@ def delete_todo(index):
         todos.pop(index)
         save_user_data('todo.json', todos)
     return redirect(url_for('index'))
+
+with app.app_context():
+    db.create_all()
+
