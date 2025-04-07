@@ -9,7 +9,8 @@
     <nav>
         <a href="{{ url_for('index') }}">ホーム</a> |
         <a href="{{ url_for('schedule_page') }}">時間割</a> |
-        <a href="{{ url_for('grades_page') }}">成績管理</a>
+        <a href="{{ url_for('grades_page') }}">成績管理</a> |
+        <a href="{{ url_for('logout') }}">🚪 ログアウト</a>
     </nav>
     <hr>
     {% block content %}{% endblock %}
