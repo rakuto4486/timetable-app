@@ -165,6 +165,15 @@ def grades_page():
         return redirect(url_for('grades_page'))
     return render_template('grades.html', grades=grades_data)
 
+@app.route('/grades/delete/<int:index>')
+@login_required
+def delete_grade(index):
+    grades_data = load_user_data('grades.json')
+    if 0 <= index < len(grades_data):
+        grades_data.pop(index)
+        save_user_data('grades.json', grades_data)
+    return redirect(url_for('grades_page'))
+
 @app.route('/grades/edit/<int:index>', methods=['GET', 'POST'])
 @login_required
 def edit_grade(index):
