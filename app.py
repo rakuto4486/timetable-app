@@ -15,7 +15,19 @@ class User(UserMixin):
     def __init__(self, id):
         self.id = id
 
-users = {'testuser': {'password': 'testpass'}}
+USERS_FILE = 'users.json'
+
+def load_users():
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(users, f, ensure_ascii=False, indent=2)
+
+users = load_users()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -33,11 +45,25 @@ def save_user_data(base_name, data):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        users = load_users()
+        if username in users:
+            return render_template('register.html', error='すでに登録されています')
+        users[username] = {'password': password}
+        save_users(users)
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        users = load_users()
         if username in users and users[username]['password'] == password:
             login_user(User(username))
             return redirect(url_for('index'))

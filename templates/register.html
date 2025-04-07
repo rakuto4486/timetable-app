@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4" style="max-width: 400px;">
+  <h2 class="mb-3">📝 新規ユーザー登録</h2>
+
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    <div class="mb-3">
+      <label for="username" class="form-label">ユーザー名</label>
+      <input type="text" class="form-control" name="username" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">パスワード</label>
+      <input type="password" class="form-control" name="password" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">登録する</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a href="{{ url_for('login') }}">← ログイン画面へ戻る</a>
+  </div>
+</div>
+{% endblock %}
