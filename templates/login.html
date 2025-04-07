@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <h3>ログイン</h3>
 <form method="post">
@@ -15,4 +16,8 @@
   {% endif %}
   <input type="submit" value="ログイン">
 </form>
+
+<!-- 🔽 新規登録リンクをここに追加 -->
+<p>アカウントを持っていない場合は <a href="{{ url_for('register') }}">新規登録</a></p>
+
 {% endblock %}
