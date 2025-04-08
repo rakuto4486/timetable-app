@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'rakuto'
@@ -50,12 +51,14 @@ def register():
         if existing_user:
             return render_template('register.html', error='そのユーザー名は既に使われています。')
 
-        # 新しいユーザー作成
-        new_user = User(username=username, password=password)
+        # 🔐 パスワードをハッシュ化して保存！
+        hashed_password = generate_password_hash(password)
+
+        # 新しいユーザー作成（ハッシュ化されたパスワードで）
+        new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
-        # 登録後すぐにログイン状態にする
         login_user(new_user)
         return redirect(url_for('index'))
 
@@ -70,7 +73,8 @@ def login():
         # DBからユーザー検索
         user = User.query.filter_by(username=username).first()
 
-        if user and user.password == password:
+        # 🔐 パスワードをハッシュと照合
+        if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('index'))
 
