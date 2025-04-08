@@ -135,17 +135,29 @@ def index():
 def schedule_page():
     schedule = load_user_data('timetable.json')
     grades_data = load_user_data('grades.json')
+
     if request.method == 'POST':
-        schedule.append({
+        new_class = {
             'class_name': request.form['class_name'],
             'day': request.form['day'],
             'period': int(request.form['period']),
             'room': request.form['room'],
             'teacher': request.form['teacher']
-        })
+        }
+
+        # 🔒 重複チェック：同じ曜日と時限にすでに授業があれば登録させない
+        for entry in schedule:
+            if entry['day'] == new_class['day'] and entry['period'] == new_class['period']:
+                error = f"{new_class['day']}曜 {new_class['period']}限には既に授業が登録されています。"
+                return render_template('schedule.html', schedule=schedule, grades=grades_data, error=error)
+
+        # 登録処理
+        schedule.append(new_class)
         save_user_data('timetable.json', schedule)
         return redirect(url_for('schedule_page'))
+
     return render_template('schedule.html', schedule=schedule, grades=grades_data)
+
 
 @app.route('/delete/<int:index>')
 @login_required
