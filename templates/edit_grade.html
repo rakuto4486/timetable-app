@@ -4,7 +4,7 @@
   <h2 class="mb-4">✏️ 成績編集：{{ grade.class_name }}</h2>
 
   <form method="post">
-    {% for item in grade.items %}
+    {% for item in grade["items"] %}
       <div class="mb-3">
         <label class="form-label">{{ item.name }}（{{ item.weight }}%）</label>
         <input type="number" name="score_{{ loop.index0 }}" class="form-control" value="{{ item.score if item.score is not none }}">
