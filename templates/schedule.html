@@ -31,7 +31,7 @@
               <td class="timetable-cell" style="font-size: 0.9rem;" 
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"
-                  title="{{ item.class_name }} | {{ item.room }} | {{ item.teacher }}">
+                  title="{{ item['class_name'] }} | {{ item['room'] }} | {{ item['teacher'] }}"
                 {% set found = false %}
                 {% for item in schedule %}
                   {% if not found and item.day == day and item.period == period %}
