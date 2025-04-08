@@ -21,38 +21,29 @@
               <th>{{ period }}限</th>
               {% for day in ['月', '火', '水', '木', '金'] %}
               <td style="max-height: 90px; overflow: hidden; font-size: 0.85rem; vertical-align: top;">
-                <div 
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  title="{{ item.class_name }} | {{ item.room }} | {{ item.teacher }}"
-                  style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-                >
-                  <strong>{{ item.class_name }}</strong><br>
-                  <small>({{ item.room }})</small><br>
-                  <small>{{ item.teacher }}</small>
-                </div>
-              
                 {% set found = false %}
                 {% for item in schedule %}
                   {% if not found and item.day == day and item.period == period %}
                     <div 
                       data-bs-toggle="tooltip"
                       data-bs-placement="top"
-                      title="{{ item.class_name }} | {{ item.room }} | {{ item.teacher }}">
+                      title="{{ item.class_name }} | {{ item.room }} | {{ item.teacher }}"
+                      style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                    >
                       <strong>{{ item.class_name }}</strong><br>
-                      <small>{{ item.room }}</small><br>
+                      <small>({{ item.room }})</small><br>
                       <small>{{ item.teacher }}</small>
                     </div>
-
+              
                     {% for grade in grades %}
-                      {% if grade.class_name == item.class_name and "items" in grade %}
+                      {% if grade.class_name == item.class_name and grade.get('items') %}
                         <span class="text-muted">
                           成績：
                           {% if grade.total_score is not none %}
                             {{ grade.total_score }}
                           {% else %}
                             {% set ns = namespace(subtotal=0, complete=true) %}
-                            {% for g in grade["items"] %}
+                            {% for g in grade.items %}
                               {% if g.score is not none %}
                                 {% set ns.subtotal = ns.subtotal + (g.score * (g.weight / 100)) %}
                               {% else %}
@@ -64,12 +55,13 @@
                         </span><br>
                       {% endif %}
                     {% endfor %}
-
+              
                     <a href="{{ url_for('delete_schedule', index=loop.index0) }}" class="btn btn-sm btn-outline-danger mt-1">削除</a>
                     {% set found = true %}
                   {% endif %}
                 {% endfor %}
               </td>
+              
               {% endfor %}
             </tr>
             {% endfor %}
