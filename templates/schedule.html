@@ -20,17 +20,23 @@
             <tr>
               <th>{{ period }}限</th>
               {% for day in ['月', '火', '水', '木', '金'] %}
-              <td style="word-break: break-word;">
+              <td style="word-break: break-word; font-size: 0.9rem;">
                 {% set found = false %}
                 {% for item in schedule %}
                   {% if not found and item.day == day and item.period == period %}
-                    <strong>{{ item.class_name }}</strong><br>
-                    {{ item.room }}<br>
-                    {{ item.teacher }}<br>
+                    <div 
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="{{ item.class_name }} | {{ item.room }} | {{ item.teacher }}">
+                      <strong>{{ item.class_name }}</strong><br>
+                      <small>{{ item.room }}</small><br>
+                      <small>{{ item.teacher }}</small>
+                    </div>
 
                     {% for grade in grades %}
                       {% if grade.class_name == item.class_name and "items" in grade %}
-                        <span class="text-muted">成績：
+                        <span class="text-muted">
+                          成績：
                           {% if grade.total_score is not none %}
                             {{ grade.total_score }}
                           {% else %}
@@ -110,4 +116,11 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Bootstrap ツールチップを有効にする
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+</script>
+
 {% endblock %}
