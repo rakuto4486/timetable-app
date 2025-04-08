@@ -67,16 +67,26 @@
                     {{ item.room }}<br>
                     {{ item.teacher }}<br>
                     {% for grade in grades %}
-                      {% if grade.class_name == item.class_name %}
-                        <span class="text-muted">成績：
-                          {% if grade.total_score is not none %}
-                            {{ grade.total_score }}
-                          {% else %}
-                            未計算
-                          {% endif %}
-                        </span><br>
-                      {% endif %}
-                    {% endfor %}
+                    {% if grade.class_name == item.class_name %}
+                      <span class="text-muted">成績：
+                        {% if grade.total_score is not none %}
+                          {{ grade.total_score }}
+                        {% else %}
+                          {% set subtotal = 0 %}
+                          {% set complete = true %}
+                          {% for item_score in grade.items %}
+                            {% if item_score.score is not none %}
+                              {% set subtotal = subtotal + item_score.score * (item_score.weight / 100) %}
+                            {% else %}
+                              {% set complete = false %}
+                            {% endif %}
+                          {% endfor %}
+                          仮計：{{ subtotal | round(1) }}（未完）
+                        {% endif %}
+                      </span><br>
+                    {% endif %}
+                  {% endfor %}
+
                     <a href="{{ url_for('delete_schedule', index=loop.index0) }}" class="btn btn-sm btn-outline-danger mt-1">削除</a>
                     {% set found = true %}
                   {% endif %}
