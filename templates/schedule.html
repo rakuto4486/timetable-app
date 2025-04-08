@@ -36,29 +36,27 @@
                     <div class="text-muted small">({{ item.room }})</div>
                     <div class="text-muted small">{{ item.teacher }}</div>
               
-                    {% for grade in grades %}
-                      {% if grade.class_name == item.class_name %}
-                        {% if grade.items %}
-                          <div class="text-muted small">
-                            成績：
-                            {% if grade.total_score is not none %}
-                              {{ grade.total_score }}
-                            {% else %}
-                              {% set ns = namespace(subtotal=0, complete=true) %}
-                              {% for g in grade.items %}
-                                {% if g.score is not none %}
-                                  {% set ns.subtotal = ns.subtotal + (g.score * (g.weight / 100)) %}
-                                {% else %}
-                                  {% set ns.complete = false %}
-                                {% endif %}
-                              {% endfor %}
-                              仮計：{{ ns.subtotal | round(1) }}（未完）
-                            {% endif %}
-                          </div>
-                        {% endif %}
+                {% for grade in grades %}
+                  {% if grade.class_name == item.class_name and "items" in grade %}
+                    <div class="text-muted small">
+                      成績：
+                      {% if grade.total_score is not none %}
+                        {{ grade.total_score }}
+                      {% else %}
+                        {% set ns = namespace(subtotal=0, complete=true) %}
+                        {% for g in grade["items"] %}
+                          {% if g.score is not none %}
+                            {% set ns.subtotal = ns.subtotal + (g.score * (g.weight / 100)) %}
+                          {% else %}
+                            {% set ns.complete = false %}
+                          {% endif %}
+                        {% endfor %}
+                        仮計：{{ ns.subtotal | round(1) }}（未完）
                       {% endif %}
-                    {% endfor %}
-
+                    </div>
+                  {% endif %}
+                {% endfor %}
+                  
                     <div class="d-grid mt-1">
                       <a href="{{ url_for('delete_schedule', index=loop.index0) }}" class="btn btn-outline-danger btn-sm">削除</a>
                     </div>
