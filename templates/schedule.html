@@ -74,7 +74,7 @@
                             {{ grade.total_score }}
                           {% else %}
                             {% set ns = namespace(subtotal=0, complete=true) %}
-                            {% for g in grade.items %}
+                            {% for g in grade["items"] %}
                               {% if g.score is not none %}
                                 {% set ns.subtotal = ns.subtotal + (g.score * (g.weight / 100)) %}
                               {% else %}
