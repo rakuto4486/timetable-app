@@ -1,19 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>得点を編集</h2>
+<div class="container mt-4" style="max-width: 600px;">
+  <h2 class="mb-4">✏️ 成績編集：{{ grade.class_name }}</h2>
 
-<form method="post">
-    <p><strong>{{ grade.class_name }}</strong> の得点を入力してください：</p>
-    <ul>
-        {% for item in grade["items"] %}
-        <li>
-            {{ item.name }}（{{ item.weight }}%）：
-            <input type="number" name="score_{{ loop.index0 }}" value="{{ item.score if item.score is not none else '' }}">
-        </li>
-        {% endfor %}
-    </ul>
-    <br>
-    <input type="submit" value="保存">
-</form>
-<a href="{{ url_for('grades_page') }}">← 成績一覧に戻る</a>
+  <form method="post">
+    {% for item in grade.items %}
+      <div class="mb-3">
+        <label class="form-label">{{ item.name }}（{{ item.weight }}%）</label>
+        <input type="number" name="score_{{ loop.index0 }}" class="form-control" value="{{ item.score if item.score is not none }}">
+      </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-success w-100 mt-3">保存</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a href="{{ url_for('grades_page') }}">← 成績一覧に戻る</a>
+  </div>
+</div>
 {% endblock %}

@@ -1,90 +1,114 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>成績登録</h2>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2">
 
-<form method="post">
-    授業名：<input type="text" name="class_name" required><br>
+      <h2 class="mb-4">📊 成績登録</h2>
 
-    <div id="items">
-        <div class="item">
-            項目名：<input type="text" name="item_name[]" required>
-            割合（%）：<input type="number" name="weight[]" required>
+      <form method="post" class="mb-5">
+        <div class="mb-3">
+          <label class="form-label">授業名</label>
+          <input type="text" name="class_name" class="form-control" required>
         </div>
-    </div>
 
-    <button type="button" onclick="addItem()">＋項目を追加</button><br><br>
-    <input type="submit" value="登録">
-</form>
+        <div id="items">
+          <div class="row g-2 mb-2 item">
+            <div class="col-md-7">
+              <input type="text" name="item_name[]" class="form-control" placeholder="項目名" required>
+            </div>
+            <div class="col-md-5">
+              <input type="number" name="weight[]" class="form-control" placeholder="割合（%）" required>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addItem()">＋ 項目を追加</button>
+        <div class="d-grid">
+          <input type="submit" value="登録" class="btn btn-primary">
+        </div>
+      </form>
+
+      <h3 class="mb-3">✅ 登録済みの成績</h3>
+
+      <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>授業名</th>
+              <th>項目と割合</th>
+              <th>得点</th>
+              <th>合計点</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for grade in grades %}
+            <tr>
+              <td>{{ grade.class_name }}</td>
+              <td>
+                <ul class="list-unstyled mb-0">
+                  {% for item in grade["items"] %}
+                    <li>{{ item.name }}：{{ item.weight }}%</li>
+                  {% endfor %}
+                </ul>
+              </td>
+              <td>
+                <ul class="list-unstyled mb-0">
+                  {% for item in grade["items"] %}
+                    <li>
+                      {% if item.score is not none %}
+                        {{ item.score }}点
+                      {% else %}
+                        <em>未入力</em>
+                      {% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </td>
+              <td>
+                {% set ns = namespace(subtotal=0, complete=true) %}
+                {% for item in grade["items"] %}
+                  {% if item.score is not none %}
+                    {% set ns.subtotal = ns.subtotal + item.score * (item.weight / 100) %}
+                  {% else %}
+                    {% set ns.complete = false %}
+                  {% endif %}
+                {% endfor %}
+                {% if ns.complete %}
+                  {{ ns.subtotal | round(1) }}
+                {% else %}
+                  仮計：{{ ns.subtotal | round(1) }}（未完）
+                {% endif %}
+              </td>
+              <td>
+                <a href="{{ url_for('edit_grade', index=loop.index0) }}" class="btn btn-sm btn-outline-primary">編集</a>
+                <a href="{{ url_for('delete_grade', index=loop.index0) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('本当に削除しますか？')">削除</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script>
 function addItem() {
-    const div = document.createElement('div');
-    div.className = 'item';
-    div.innerHTML = `
-        項目名：<input type="text" name="item_name[]" required>
-        割合（%）：<input type="number" name="weight[]" required>
-    `;
-    document.getElementById('items').appendChild(div);
+  const container = document.getElementById('items');
+  const div = document.createElement('div');
+  div.className = 'row g-2 mb-2 item';
+  div.innerHTML = `
+    <div class="col-md-7">
+      <input type="text" name="item_name[]" class="form-control" placeholder="項目名" required>
+    </div>
+    <div class="col-md-5">
+      <input type="number" name="weight[]" class="form-control" placeholder="割合（%）" required>
+    </div>
+  `;
+  container.appendChild(div);
 }
 </script>
-
-<hr>
-
-<h2>登録済みの成績</h2>
-<table border="1" cellpadding="10">
-    <tr>
-        <th>授業名</th>
-        <th>項目と割合</th>
-        <th>得点</th>
-        <th>合計点</th>
-        <th>編集</th> 
-    </tr>
-    {% for grade in grades %}
-    <tr>
-        <td>{{ grade.class_name }}</td>
-        <td>
-            <ul>
-            {% for item in grade["items"] %}
-                <li>{{ item.name }}：{{ item.weight }}%</li>
-            {% endfor %}
-            </ul>
-        </td>
-        <td>
-            <ul>
-                {% for item in grade["items"] %}
-                <li>
-                    {% if item.score is not none %}
-                        {{ item.score }}点
-                    {% else %}
-                        <em>未入力</em>
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-        </td>
-        <td>
-            {% set ns = namespace(subtotal=0, complete=true) %}
-            {% for item in grade["items"] %}
-              {% if item.score is not none %}
-                {% set ns.subtotal = ns.subtotal + item.score * (item.weight / 100) %}
-              {% else %}
-                {% set ns.complete = false %}
-              {% endif %}
-            {% endfor %}
-          
-            {% if ns.complete %}
-              {{ ns.subtotal | round(1) }}
-            {% else %}
-              仮計：{{ ns.subtotal | round(1) }}（未完）
-            {% endif %}
-          </td>
-          
-        <td>
-            <a href="{{ url_for('edit_grade', index=loop.index0) }}">編集</a> |
-            <a href="{{ url_for('delete_grade', index=loop.index0) }}" style="color:red;" onclick="return confirm('本当に削除しますか？')">削除</a> <!-- ← 追加！ -->
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-
 {% endblock %}

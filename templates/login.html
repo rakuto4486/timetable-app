@@ -1,23 +1,28 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h3>ログイン</h3>
-<form method="post">
-  <div>
-    <label>ユーザー名</label>
-    <input type="text" name="username" required>
-  </div>
-  <div>
-    <label>パスワード</label>
-    <input type="password" name="password" required>
-  </div>
-  {% if error %}
-    <p style="color:red;">{{ error }}</p>
-  {% endif %}
-  <input type="submit" value="ログイン">
-</form>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+    <h2 class="text-center mb-4">🔐 ログイン</h2>
 
-<!-- 🔽 新規登録リンクをここに追加 -->
-<p>アカウントを持っていない場合は <a href="{{ url_for('register') }}">新規登録</a></p>
+    {% if error %}
+      <div class="alert alert-danger text-center">{{ error }}</div>
+    {% endif %}
 
+    <form method="post">
+      <div class="mb-3">
+        <label for="username" class="form-label">ユーザー名</label>
+        <input type="text" class="form-control" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">パスワード</label>
+        <input type="password" class="form-control" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">ログイン</button>
+    </form>
+
+    <div class="text-center mt-3">
+      アカウントを持っていない場合は <a href="{{ url_for('register') }}">新規登録</a>
+    </div>
+  </div>
+</div>
 {% endblock %}

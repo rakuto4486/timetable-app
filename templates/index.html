@@ -1,90 +1,108 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+<div class="container mt-4" style="max-width: 700px;">
+  <h2 class="mb-4">🎓 大学時間割 & 成績管理アプリ</h2>
 
-      <h2 class="mb-4">大学時間割 & 成績管理アプリ</h2>
-
-      <h4 class="mt-4">📝 やることリスト</h4>
-      <form method="post" class="mb-4">
-        <div class="mb-2">
-          <input type="text" name="task" placeholder="例: レポート提出" class="form-control" required>
-        </div>
-        <div class="mb-2">
-          <input type="text" name="class_name" placeholder="授業名（任意）" class="form-control">
-        </div>
-        <div class="mb-2">
-          <input type="date" name="due_date" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-primary">追加</button>
-      </form>
-
-      <h4 class="mt-4">📅 今日の授業とToDo</h4>
-      {% if today_schedule %}
-        {% for subject in today_schedule %}
-          <div class="card mb-2">
-            <div class="card-body">
-              <h5 class="card-title">{{ subject.class_name }}</h5>
-              <p class="card-text">{{ subject.day }}曜 {{ subject.period }}限<br>{{ subject.room }} / {{ subject.teacher }}</p>
-              {% for block in today_todos %}
-                {% if block.class_name == subject.class_name %}
-                  <ul class="mb-0">
-                    {% for task in block.tasks %}
-                      <li>
-                        {% if task.done %}
-                          ✅ <s>{{ task.task }}</s>
-                        {% else %}
-                          {{ task.task }}
-                        {% endif %}
-                        [<a href="{{ url_for('mark_done', index=loop.index0) }}">{% if task.done %}戻す{% else %}完了{% endif %}</a>]
-                        [<a href="{{ url_for('delete_todo', index=loop.index0) }}">削除</a>]
-                      </li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>今日の授業はありません。</p>
-      {% endif %}
-
-      <h4 class="mt-4">📋 やることリスト（全体）</h4>
-      <ul>
-        {% for todo in todos %}
-          <li>
-            {% if todo.done %}
-              ✅ <s>{{ todo.task }}</s>
-            {% else %}
-              {{ todo.task }}
-            {% endif %}
-            {% if todo.class_name %}
-              <span class="text-muted">（{{ todo.class_name }}）</span>
-            {% endif %}
-            {% if todo.due_date %}
-              - <small>
-                {% if todo.days_left > 0 %}
-                  あと{{ todo.days_left }}日
-                {% elif todo.days_left == 0 %}
-                  ⏰ 今日が締切！
-                {% else %}
-                  ⚠️ 期限切れ（{{ todo.days_left | abs }}日前）
-                {% endif %}
-              </small>
-            {% endif %}
-            [<a href="{{ url_for('mark_done', index=loop.index0) }}">{% if todo.done %}戻す{% else %}完了{% endif %}</a>]
-            [<a href="{{ url_for('delete_todo', index=loop.index0) }}">削除</a>]
-          </li>
-        {% endfor %}
-      </ul>
-
-      <hr>
-      <a href="{{ url_for('schedule_page') }}">📅 時間割を登録しに行く</a><br>
-      <a href="{{ url_for('grades_page') }}">📊 成績を確認しに行く</a>
-
+  <h4 class="mt-4">📝 やること追加</h4>
+  <form method="post" class="row g-2 mb-4">
+    <div class="col-12">
+      <input type="text" name="task" placeholder="例: レポート提出" class="form-control" required>
     </div>
+    <div class="col-md-6">
+      <input type="text" name="class_name" placeholder="授業名（任意）" class="form-control">
+    </div>
+    <div class="col-md-6">
+      <input type="date" name="due_date" class="form-control">
+    </div>
+    <div class="col-12 d-grid">
+      <button type="submit" class="btn btn-primary">追加</button>
+    </div>
+  </form>
+
+  <h4 class="mt-4">📅 今日の授業とToDo</h4>
+  {% if today_schedule %}
+    {% for subject in today_schedule %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ subject.class_name }}（{{ subject.day }}曜・{{ subject.period }}限）</h5>
+          <p class="card-text text-muted">{{ subject.room }} / {{ subject.teacher }}</p>
+
+          {% for block in today_todos %}
+            {% if block.class_name == subject.class_name %}
+              <ul class="list-group list-group-flush">
+                {% for task in block.tasks %}
+                  <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                      {% if task.done %}
+                        ✅ <s>{{ task.task }}</s>
+                      {% else %}
+                        {{ task.task }}
+                      {% endif %}
+                      {% if task.due_date %}
+                        <br><small class="text-muted">
+                          {% if task.days_left > 0 %}
+                            <span class="badge bg-secondary">あと{{ task.days_left }}日</span>
+                          {% elif task.days_left == 0 %}
+                            <span class="badge bg-warning text-dark">今日が締切！</span>
+                          {% else %}
+                            <span class="badge bg-danger">期限切れ（{{ task.days_left | abs }}日前）</span>
+                          {% endif %}
+                        </small>
+                      {% endif %}
+                    </div>
+                    <div class="ms-2">
+                      <a href="{{ url_for('mark_done', index=loop.index0) }}" class="btn btn-sm btn-outline-success">{% if task.done %}戻す{% else %}完了{% endif %}</a>
+                      <a href="{{ url_for('delete_todo', index=loop.index0) }}" class="btn btn-sm btn-outline-danger">削除</a>
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">今日の授業はありません。</p>
+  {% endif %}
+
+  <h4 class="mt-5">📋 やることリスト（全体）</h4>
+  <ul class="list-group">
+    {% for todo in todos %}
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div>
+          {% if todo.done %}
+            ✅ <s>{{ todo.task }}</s>
+          {% else %}
+            {{ todo.task }}
+          {% endif %}
+          {% if todo.class_name %}
+            <span class="text-muted">（{{ todo.class_name }}）</span>
+          {% endif %}
+          {% if todo.due_date %}
+            <br><small>
+              {% if todo.days_left > 0 %}
+                <span class="badge bg-secondary">あと{{ todo.days_left }}日</span>
+              {% elif todo.days_left == 0 %}
+                <span class="badge bg-warning text-dark">今日が締切！</span>
+              {% else %}
+                <span class="badge bg-danger">期限切れ（{{ todo.days_left | abs }}日前）</span>
+              {% endif %}
+            </small>
+          {% endif %}
+        </div>
+        <div class="ms-2">
+          <a href="{{ url_for('mark_done', index=loop.index0) }}" class="btn btn-sm btn-outline-success">{% if todo.done %}戻す{% else %}完了{% endif %}</a>
+          <a href="{{ url_for('delete_todo', index=loop.index0) }}" class="btn btn-sm btn-outline-danger">削除</a>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <hr class="mt-5">
+  <div class="d-flex justify-content-between">
+    <a href="{{ url_for('schedule_page') }}" class="btn btn-outline-primary">📅 時間割を登録</a>
+    <a href="{{ url_for('grades_page') }}" class="btn btn-outline-primary">📊 成績を確認</a>
   </div>
 </div>
 {% endblock %}
