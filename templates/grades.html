@@ -63,20 +63,19 @@ function addItem() {
             </ul>
         </td>
         <td>
-            {% set subtotal = 0 %}
-            {% set complete = true %}
+            {% set ns = namespace(subtotal=0, complete=true) %}
             {% for item in grade["items"] %}
               {% if item.score is not none %}
-                {% set subtotal = subtotal + item.score * (item.weight / 100) %}
+                {% set ns.subtotal = ns.subtotal + item.score * (item.weight / 100) %}
               {% else %}
-                {% set complete = false %}
+                {% set ns.complete = false %}
               {% endif %}
             {% endfor %}
           
-            {% if complete %}
-              {{ subtotal | round(1) }}
+            {% if ns.complete %}
+              {{ ns.subtotal | round(1) }}
             {% else %}
-              仮計：{{ subtotal | round(1) }}（未完）
+              仮計：{{ ns.subtotal | round(1) }}（未完）
             {% endif %}
           </td>
           
