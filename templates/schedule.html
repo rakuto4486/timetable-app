@@ -68,7 +68,7 @@
                     {{ item.teacher }}<br>
 
                     {% for grade in grades %}
-                      {% if grade.class_name == item.class_name %}
+                      {% if grade.class_name == item.class_name and "items" in grade %}
                         <span class="text-muted">成績：
                           {% if grade.total_score is not none %}
                             {{ grade.total_score }}
