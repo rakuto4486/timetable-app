@@ -20,7 +20,18 @@
             <tr>
               <th>{{ period }}限</th>
               {% for day in ['月', '火', '水', '木', '金'] %}
-              <td style="word-break: break-word; font-size: 0.9rem;">
+              <td style="max-height: 90px; overflow: hidden; font-size: 0.85rem; vertical-align: top;">
+                <div 
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="{{ item.class_name }} | {{ item.room }} | {{ item.teacher }}"
+                  style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                >
+                  <strong>{{ item.class_name }}</strong><br>
+                  <small>({{ item.room }})</small><br>
+                  <small>{{ item.teacher }}</small>
+                </div>
+              
                 {% set found = false %}
                 {% for item in schedule %}
                   {% if not found and item.day == day and item.period == period %}
