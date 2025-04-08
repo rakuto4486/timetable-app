@@ -104,4 +104,25 @@ body {
     }
   }
   
+  /* ナビ展開時、背景がページ全体を覆わないように修正 */
+.navbar-collapse {
+  background-color: white; /* または透明なら transparent */
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.navbar-nav .nav-link {
+  color: #333;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #007bff;
+}
+
+.navbar-nav .nav-link.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+
   
