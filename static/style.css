@@ -124,5 +124,12 @@ body {
   text-decoration: underline;
 }
 
+.timetable-cell {
+  max-height: 4.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
   

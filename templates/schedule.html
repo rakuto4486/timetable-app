@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
+<style>
+  .timetable-cell {
+    max-height: 5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
 <div class="container mt-4">
   <div class="row">
     <div class="col-lg-8 offset-lg-2">
@@ -20,22 +28,20 @@
             <tr>
               <th>{{ period }}限</th>
               {% for day in ['月', '火', '水', '木', '金'] %}
-              <td style="word-break: break-word; font-size: 0.9rem;">
+              <td class="timetable-cell" style="font-size: 0.9rem;" 
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="{{ item.class_name }} | {{ item.room }} | {{ item.teacher }}">
                 {% set found = false %}
                 {% for item in schedule %}
                   {% if not found and item.day == day and item.period == period %}
-                    <div 
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="top"
-                      title="{{ item.class_name }} | {{ item.room }} | {{ item.teacher }}">
-                      <strong>{{ item.class_name }}</strong><br>
-                      <small>{{ item.room }}</small><br>
-                      <small>{{ item.teacher }}</small>
-                    </div>
+                    <strong>{{ item.class_name }}</strong><br>
+                    <small>{{ item.room }}</small><br>
+                    <small>{{ item.teacher }}</small><br>
 
                     {% for grade in grades %}
                       {% if grade.class_name == item.class_name and "items" in grade %}
-                        <span class="text-muted">
+                        <small class="text-muted">
                           成績：
                           {% if grade.total_score is not none %}
                             {{ grade.total_score }}
@@ -50,7 +56,7 @@
                             {% endfor %}
                             仮計：{{ ns.subtotal | round(1) }}（未完）
                           {% endif %}
-                        </span><br>
+                        </small><br>
                       {% endif %}
                     {% endfor %}
 
