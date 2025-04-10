@@ -17,7 +17,7 @@
               {% else %}
                 仮計：
                 {% set ns = namespace(subtotal=0, complete=true) %}
-                {% for g in grade.items %}
+                {% for g in grade["items"] %}
                   {% if g.score is not none %}
                     {% set ns.subtotal = ns.subtotal + (g.score * (g.weight / 100)) %}
                   {% else %}
@@ -30,13 +30,17 @@
           </h2>
           <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#gradesAccordion">
             <div class="accordion-body">
+              {% if grade["items"] %}
               <ul>
-                {% for item in grade.items %}
+                {% for item in grade["items"] %}
                 <li>{{ item.name }}：{{ item.weight }}% ／ 得点：
                   {% if item.score is not none %}{{ item.score }}{% else %}未入力{% endif %}
                 </li>
                 {% endfor %}
               </ul>
+              {% else %}
+              <p class="text-muted">項目がまだ登録されていません。</p>
+              {% endif %}
               <div class="mt-2">
                 <a href="{{ url_for('edit_grade', class_name=grade.class_name) }}" class="btn btn-primary btn-sm">編集</a>
                 <a href="{{ url_for('delete_grade', class_name=grade.class_name) }}" class="btn btn-danger btn-sm">削除</a>
