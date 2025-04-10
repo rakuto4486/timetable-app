@@ -172,13 +172,42 @@ def delete_schedule(index):
 @login_required
 def grades_page():
     grades_data = load_user_data('grades.json')
+    schedule_data = load_user_data('timetable.json')
+
+    # 🔽 POST（新規登録）
     if request.method == 'POST':
+        class_name = request.form['class_name']
+        item_names = request.form.getlist('item_name[]')
+        weights = request.form.getlist('weight[]')
+
         items = []
-        for name, w in zip(request.form.getlist('item_name[]'), request.form.getlist('weight[]')):
-            items.append({'name': name, 'weight': int(w), 'score': None})
-        grades_data.append({'class_name': request.form['class_name'], 'items': items, 'total_score': None})
+        for name, weight in zip(item_names, weights):
+            items.append({
+                'name': name,
+                'weight': float(weight),
+                'score': None
+            })
+
+        new_grade = {
+            'class_name': class_name,
+            'items': items,
+            'total_score': None
+        }
+
+        grades_data.append(new_grade)
         save_user_data('grades.json', grades_data)
         return redirect(url_for('grades_page'))
+
+    # 🔽 GET（読み込み時に時間割の授業を補完）
+    existing_class_names = {grade['class_name'] for grade in grades_data}
+    for subject in schedule_data:
+        if subject['class_name'] not in existing_class_names:
+            grades_data.append({
+                'class_name': subject['class_name'],
+                'items': [],
+                'total_score': None
+            })
+
     return render_template('grades.html', grades=grades_data)
 
 @app.route('/grades/delete/<int:index>')
