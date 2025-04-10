@@ -211,11 +211,13 @@ def grades_page():
 
     return render_template('grades.html', grades=grades_data)
 
-@app.route('/grades/delete/<class_name>')
+@app.route('/grades/delete/<path:class_name>')
 @login_required
 def delete_grade(class_name):
-    grades_data = load_user_data('grades.json')
+    from urllib.parse import unquote
     decoded_name = unquote(class_name)
+    grades_data = load_user_data('grades.json')
+
     updated_grades = [g for g in grades_data if g["class_name"] != decoded_name]
 
     if len(updated_grades) == len(grades_data):
@@ -224,11 +226,12 @@ def delete_grade(class_name):
     save_user_data('grades.json', updated_grades)
     return redirect(url_for('grades_page'))
 
-@app.route('/grades/edit/<class_name>', methods=['GET', 'POST'])
+@app.route('/grades/edit/<path:class_name>', methods=['GET', 'POST'])
 @login_required
 def edit_grade(class_name):
-    grades_data = load_user_data('grades.json')
+    from urllib.parse import unquote
     decoded_name = unquote(class_name)
+    grades_data = load_user_data('grades.json')
     grade = next((g for g in grades_data if g["class_name"] == decoded_name), None)
     
     if grade is None:
