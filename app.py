@@ -10,7 +10,7 @@ from urllib.parse import unquote
 app = Flask(__name__)
 app.secret_key = 'rakuto'
 
-# PostgreSQL 接続情報（Render の Internal Database URL に置き換えてね）
+# PostgreSQL 接続情報
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://student_db_qrdn_user:zm8VRl4SH6jARDLcWajoJccS8ODy6ZqL@dpg-cvq4p23e5dus73f1k0fg-a/student_db_qrdn'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -46,23 +46,15 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
-        # データベース上にすでに存在するか確認
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             return render_template('register.html', error='そのユーザー名は既に使われています。')
-
-        # 🔐 パスワードをハッシュ化して保存！
         hashed_password = generate_password_hash(password)
-
-        # 新しいユーザー作成（ハッシュ化されたパスワードで）
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-
         login_user(new_user)
         return redirect(url_for('index'))
-
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -70,17 +62,11 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
-        # DBからユーザー検索
         user = User.query.filter_by(username=username).first()
-
-        # 🔐 パスワードをハッシュと照合
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('index'))
-
         return render_template('login.html', error='ログイン失敗')
-
     return render_template('login.html')
 
 @app.route('/logout')
@@ -136,7 +122,6 @@ def index():
 def schedule_page():
     schedule = load_user_data('timetable.json')
     grades_data = load_user_data('grades.json')
-
     if request.method == 'POST':
         new_class = {
             'class_name': request.form['class_name'],
@@ -145,20 +130,14 @@ def schedule_page():
             'room': request.form['room'],
             'teacher': request.form['teacher']
         }
-
-        # 🔒 重複チェック：同じ曜日と時限にすでに授業があれば登録させない
         for entry in schedule:
             if entry['day'] == new_class['day'] and entry['period'] == new_class['period']:
                 error = f"{new_class['day']}曜 {new_class['period']}限には既に授業が登録されています。"
                 return render_template('schedule.html', schedule=schedule, grades=grades_data, error=error)
-
-        # 登録処理
         schedule.append(new_class)
         save_user_data('timetable.json', schedule)
         return redirect(url_for('schedule_page'))
-
     return render_template('schedule.html', schedule=schedule, grades=grades_data)
-
 
 @app.route('/delete/<int:index>')
 @login_required
@@ -174,13 +153,10 @@ def delete_schedule(index):
 def grades_page():
     grades_data = load_user_data('grades.json')
     schedule_data = load_user_data('timetable.json')
-
-    # 🔽 POST（新規登録）
     if request.method == 'POST':
         class_name = request.form['class_name']
         item_names = request.form.getlist('item_name[]')
         weights = request.form.getlist('weight[]')
-
         items = []
         for name, weight in zip(item_names, weights):
             items.append({
@@ -188,19 +164,15 @@ def grades_page():
                 'weight': float(weight),
                 'score': None
             })
-
-        new_grade = {
+        grades_data.append({
             'class_name': class_name,
             'items': items,
             'total_score': None
-        }
-
-        grades_data.append(new_grade)
+        })
         save_user_data('grades.json', grades_data)
         return redirect(url_for('grades_page'))
 
-    # 🔽 GET（読み込み時に時間割の授業を補完）
-    existing_class_names = {grade['class_name'] for grade in grades_data}
+    existing_class_names = {g['class_name'] for g in grades_data}
     for subject in schedule_data:
         if subject['class_name'] not in existing_class_names:
             grades_data.append({
@@ -208,60 +180,49 @@ def grades_page():
                 'items': [],
                 'total_score': None
             })
-
     return render_template('grades.html', grades=grades_data)
-
-@app.route('/grades/delete/<path:class_name>')
-@login_required
-def delete_grade(class_name):
-    from urllib.parse import unquote
-    decoded_name = unquote(class_name)
-    grades_data = load_user_data('grades.json')
-
-    updated_grades = [g for g in grades_data if g["class_name"] != decoded_name]
-
-    if len(updated_grades) == len(grades_data):
-        return "削除対象が見つかりません", 404
-
-    save_user_data('grades.json', updated_grades)
-    return redirect(url_for('grades_page'))
 
 @app.route('/grades/edit/<path:class_name>', methods=['GET', 'POST'])
 @login_required
 def edit_grade(class_name):
-    from urllib.parse import unquote
     decoded_name = unquote(class_name)
     grades_data = load_user_data('grades.json')
-    grade = next((g for g in grades_data if g["class_name"] == decoded_name), None)
-    
+    grade = next((g for g in grades_data if g['class_name'] == decoded_name), None)
     if grade is None:
         return "データが見つかりません", 404
-
-    # 🔽 items キーがない場合に備えて初期化
-    if "items" not in grade:
-        grade["items"] = []
-
+    if 'items' not in grade:
+        grade['items'] = []
     if request.method == 'POST':
         total = 0
         all_entered = True
-        for i, item in enumerate(grade["items"]):
+        for i, item in enumerate(grade['items']):
             score_str = request.form.get(f"score_{i}")
             if score_str:
                 try:
                     score = float(score_str)
-                    item["score"] = score
-                    total += score * (item["weight"] / 100)
+                    item['score'] = score
+                    total += score * (item['weight'] / 100)
                 except ValueError:
-                    item["score"] = None
+                    item['score'] = None
                     all_entered = False
             else:
-                item["score"] = None
+                item['score'] = None
                 all_entered = False
-        grade["total_score"] = round(total, 1) if all_entered else None
+        grade['total_score'] = round(total, 1) if all_entered else None
         save_user_data('grades.json', grades_data)
         return redirect(url_for('grades_page'))
-
     return render_template('edit_grade.html', grade=grade)
+
+@app.route('/grades/delete/<path:class_name>')
+@login_required
+def delete_grade(class_name):
+    decoded_name = unquote(class_name)
+    grades_data = load_user_data('grades.json')
+    updated_grades = [g for g in grades_data if g['class_name'] != decoded_name]
+    if len(updated_grades) == len(grades_data):
+        return "削除対象が見つかりません", 404
+    save_user_data('grades.json', updated_grades)
+    return redirect(url_for('grades_page'))
 
 @app.route('/todo/done/<int:index>')
 @login_required
@@ -283,4 +244,3 @@ def delete_todo(index):
 
 with app.app_context():
     db.create_all()
-
