@@ -42,8 +42,8 @@
               <p class="text-muted">項目がまだ登録されていません。</p>
               {% endif %}
               <div class="mt-2">
-                <a href="{{ url_for('edit_grade', class_name=grade.class_name) }}" class="btn btn-primary btn-sm">編集</a>
-                <a href="{{ url_for('delete_grade', class_name=grade.class_name) }}" class="btn btn-danger btn-sm">削除</a>
+                <a href="{{ url_for('edit_grade', class_name=grade.class_name|urlencode) }}" class="btn btn-primary btn-sm">編集</a>
+                <a href="{{ url_for('delete_grade', class_name=grade.class_name|urlencode) }}" class="btn btn-danger btn-sm">削除</a>                
               </div>
             </div>
           </div>
