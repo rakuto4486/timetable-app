@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import unquote
 
 app = Flask(__name__)
 app.secret_key = 'rakuto'
@@ -214,9 +215,8 @@ def grades_page():
 @login_required
 def delete_grade(class_name):
     grades_data = load_user_data('grades.json')
-
-    # class_name に一致するデータを探して削除
-    updated_grades = [g for g in grades_data if g["class_name"] != class_name]
+    decoded_name = unquote(class_name)
+    updated_grades = [g for g in grades_data if g["class_name"] != decoded_name]
 
     if len(updated_grades) == len(grades_data):
         return "削除対象が見つかりません", 404
@@ -228,9 +228,9 @@ def delete_grade(class_name):
 @login_required
 def edit_grade(class_name):
     grades_data = load_user_data('grades.json')
-
-    # class_name で該当データを検索
-    grade = next((g for g in grades_data if g["class_name"] == class_name), None)
+    decoded_name = unquote(class_name)
+    grade = next((g for g in grades_data if g["class_name"] == decoded_name), None)
+    
     if grade is None:
         return "データが見つかりません", 404
 
