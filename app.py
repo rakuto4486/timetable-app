@@ -227,6 +227,11 @@ def edit_grade(index):
         return "データが見つかりません", 404
 
     grade = grades_data[index]
+    
+    # 🔽 items キーがない場合に備えて初期化
+    if "items" not in grade:
+        grade["items"] = []
+
     if request.method == 'POST':
         total = 0
         all_entered = True
