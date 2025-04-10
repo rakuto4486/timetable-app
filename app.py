@@ -6,6 +6,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import unquote
+import unicodedata
 
 app = Flask(__name__)
 app.secret_key = 'rakuto'
@@ -182,56 +183,68 @@ def grades_page():
             })
     return render_template('grades.html', grades=grades_data)
 
-@app.route('/grades/edit/<path:class_name>', methods=['GET', 'POST'])
-@login_required
-def edit_grade(class_name):
-    decoded_name = unquote(class_name)
-    grades_data = load_user_data('grades.json')
-    grade = next((g for g in grades_data if g['class_name'] == decoded_name), None)
-    if grade is None:
-        return "データが見つかりません", 404
-    if 'items' not in grade:
-        grade['items'] = []
-    if request.method == 'POST':
-        total = 0
-        all_entered = True
-        for i, item in enumerate(grade['items']):
-            score_str = request.form.get(f"score_{i}")
-            if score_str:
-                try:
-                    score = float(score_str)
-                    item['score'] = score
-                    total += score * (item['weight'] / 100)
-                except ValueError:
-                    item['score'] = None
-                    all_entered = False
-            else:
-                item['score'] = None
-                all_entered = False
-        grade['total_score'] = round(total, 1) if all_entered else None
-        save_user_data('grades.json', grades_data)
-        return redirect(url_for('grades_page'))
-    return render_template('edit_grade.html', grade=grade)
-
 @app.route('/grades/delete/<path:class_name>')
 @login_required
 def delete_grade(class_name):
     decoded_name = unquote(class_name)
+    decoded_name = unicodedata.normalize('NFKC', decoded_name)  # ← 正規化！
+    print(f"[削除リクエスト] decoded_name: {decoded_name}")  # ← 追加！
     grades_data = load_user_data('grades.json')
-    updated_grades = [g for g in grades_data if g['class_name'] != decoded_name]
+
+    for g in grades_data:
+        normalized_class = unicodedata.normalize('NFKC', g["class_name"])
+        print(f"[登録データ] class_name: {g['class_name']} / 正規化: {normalized_class}")  # ← 追加！
+
+    updated_grades = [
+        g for g in grades_data
+        if unicodedata.normalize('NFKC', g["class_name"]) != decoded_name
+    ]
+
     if len(updated_grades) == len(grades_data):
         return "削除対象が見つかりません", 404
+
     save_user_data('grades.json', updated_grades)
     return redirect(url_for('grades_page'))
 
-@app.route('/todo/done/<int:index>')
+
+@app.route('/grades/edit/<path:class_name>', methods=['GET', 'POST'])
 @login_required
-def mark_done(index):
-    todos = load_user_data('todo.json')
-    if 0 <= index < len(todos):
-        todos[index]['done'] = not todos[index]['done']
-        save_user_data('todo.json', todos)
-    return redirect(url_for('index'))
+def edit_grade(class_name):
+    decoded_name = unquote(class_name)
+    decoded_name = unicodedata.normalize('NFKC', decoded_name)
+    grades_data = load_user_data('grades.json')
+
+    grade = next(
+        (g for g in grades_data if unicodedata.normalize('NFKC', g["class_name"]) == decoded_name),
+        None
+    )
+    if grade is None:
+        return "データが見つかりません", 404
+
+    if "items" not in grade:
+        grade["items"] = []
+
+    if request.method == 'POST':
+        total = 0
+        all_entered = True
+        for i, item in enumerate(grade["items"]):
+            score_str = request.form.get(f"score_{i}")
+            if score_str:
+                try:
+                    score = float(score_str)
+                    item["score"] = score
+                    total += score * (item["weight"] / 100)
+                except ValueError:
+                    item["score"] = None
+                    all_entered = False
+            else:
+                item["score"] = None
+                all_entered = False
+        grade["total_score"] = round(total, 1) if all_entered else None
+        save_user_data('grades.json', grades_data)
+        return redirect(url_for('grades_page'))
+
+    return render_template('edit_grade.html', grade=grade)
 
 @app.route('/todo/delete/<int:index>')
 @login_required
