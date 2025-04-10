@@ -210,24 +210,30 @@ def grades_page():
 
     return render_template('grades.html', grades=grades_data)
 
-@app.route('/grades/delete/<int:index>')
+@app.route('/grades/delete/<class_name>')
 @login_required
-def delete_grade(index):
+def delete_grade(class_name):
     grades_data = load_user_data('grades.json')
-    if 0 <= index < len(grades_data):
-        grades_data.pop(index)
-        save_user_data('grades.json', grades_data)
+
+    # class_name に一致するデータを探して削除
+    updated_grades = [g for g in grades_data if g["class_name"] != class_name]
+
+    if len(updated_grades) == len(grades_data):
+        return "削除対象が見つかりません", 404
+
+    save_user_data('grades.json', updated_grades)
     return redirect(url_for('grades_page'))
 
-@app.route('/grades/edit/<int:index>', methods=['GET', 'POST'])
+@app.route('/grades/edit/<class_name>', methods=['GET', 'POST'])
 @login_required
-def edit_grade(index):
+def edit_grade(class_name):
     grades_data = load_user_data('grades.json')
-    if index < 0 or index >= len(grades_data):
+
+    # class_name で該当データを検索
+    grade = next((g for g in grades_data if g["class_name"] == class_name), None)
+    if grade is None:
         return "データが見つかりません", 404
 
-    grade = grades_data[index]
-    
     # 🔽 items キーがない場合に備えて初期化
     if "items" not in grade:
         grade["items"] = []
